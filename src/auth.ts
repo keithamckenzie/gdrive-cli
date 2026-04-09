@@ -243,12 +243,18 @@ function createOAuth2Client(credPath: string): DriveAuthClient {
 async function getNewToken(
   oAuth2Client: DriveAuthClient,
   scopeProfile: ScopeProfile,
+  credPath: string,
   useKeychain = true
 ): Promise<StoredToken> {
   const state = randomBytes(64).toString("hex");
   const { codeVerifier, codeChallenge } =
     await oAuth2Client.generateCodeVerifierAsync();
-  let redirectUri = "http://127.0.0.1";
+
+  // Derive loopback hostname from credentials file to match Google's registered redirect URI.
+  const creds = loadCredentials(credPath);
+  const configuredRedirect = getOAuthClientConfig(creds).redirect_uris[0] || "http://localhost";
+  const loopbackHost = new URL(configuredRedirect).hostname;
+  let redirectUri = `http://${loopbackHost}`;
 
   const code = await new Promise<string>((resolve, reject) => {
     let settled = false;
@@ -296,14 +302,14 @@ async function getNewToken(
       finish(() => reject(error));
     });
 
-    server.listen(0, "127.0.0.1", () => {
+    server.listen(0, loopbackHost, () => {
       const address = server.address();
       if (!address || typeof address === "string") {
         finish(() => reject(new Error("Failed to bind the local OAuth callback server.")));
         return;
       }
 
-      redirectUri = `http://127.0.0.1:${address.port}`;
+      redirectUri = `http://${loopbackHost}:${address.port}`;
       const authUrl = oAuth2Client.generateAuthUrl({
         access_type: "offline",
         scope: DRIVE_SCOPES[scopeProfile],
@@ -374,6 +380,7 @@ export async function authorize(
   storedToken = await getNewToken(
     oAuth2Client,
     options.scopeProfile,
+    credPath,
     options.useKeychain
   );
   oAuth2Client.setCredentials(storedToken);
