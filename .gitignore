@@ -1,0 +1,15 @@
+node_modules/
+dist/
+credentials.json
+credentials*.json
+token*.json
+.env
+.env.*
+*.pem
+*.key
+*.p12
+.DS_Store
+Thumbs.db
+*.log
+.claude/
+CLAUDE.md

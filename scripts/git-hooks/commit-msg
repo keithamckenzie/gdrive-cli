@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+#
+# Reject commit messages that mention AI coding tools
+#
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+_SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$_SOURCE" ]; do
+  _DIR="$(cd -P "$(dirname "$_SOURCE")" && pwd)"
+  _SOURCE="$(readlink "$_SOURCE")"
+  [[ "$_SOURCE" != /* ]] && _SOURCE="$_DIR/$_SOURCE"
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$_SOURCE")" && pwd)"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/../lib/hook-policy.sh"
+
+if has_ai_attribution "$COMMIT_MSG"; then
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "COMMIT REJECTED"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "Commit message contains AI coding tool attribution."
+  echo ""
+  echo "Detected pattern: '$MATCHED_PATTERN'"
+  echo ""
+  echo "AI coding tools are development assistants, not contributors."
+  echo "Remove the attribution and commit again."
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  exit 1
+fi
+
+if has_process_jargon "$COMMIT_MSG"; then
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "COMMIT REJECTED"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "Commit message contains internal process jargon."
+  echo ""
+  echo "Detected pattern: '$MATCHED_PATTERN'"
+  echo ""
+  echo "Commit messages describe WHAT changed and WHY."
+  echo "Remove process details and commit again."
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  exit 1
+fi
+
+exit 0
