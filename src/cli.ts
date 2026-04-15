@@ -130,7 +130,7 @@ program
   )
   .option(
     "--no-keychain",
-    "Disable macOS Keychain token storage and use token files instead"
+    "Disable native keychain token storage and use token files instead"
   );
 
 process.on("uncaughtException", handleFatalError);

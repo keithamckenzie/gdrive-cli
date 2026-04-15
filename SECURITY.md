@@ -16,7 +16,7 @@ Only the latest release on the `main` branch is supported with security fixes.
 
 ## Token Storage
 
-OAuth tokens are stored in the macOS Keychain via native bindings when available. If the CLI falls back to file-based storage, it uses `0600` file permissions for token files under `~/.config/gdrive-cli/`. The config directory itself is created with `0700` permissions.
+OAuth tokens are stored in the native OS keychain when available (macOS Keychain, Windows Credential Manager, or Linux Secret Service). If keychain storage is unavailable or disabled, the CLI falls back to file-based storage with `0600` file permissions for token files under `~/.config/gdrive-cli/`. The config directory itself is created with `0700` permissions.
 
 ## OAuth Credentials
 

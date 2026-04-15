@@ -365,7 +365,7 @@ async function getNewToken(
 
   const backend = saveStoredToken(scopeProfile, mergedToken, useKeychain);
   if (backend === "keychain") {
-    console.log(`Token saved to macOS Keychain (${KEYCHAIN_ACCOUNT_NAMES[scopeProfile]}).`);
+    console.log(`Token saved to system keychain (${KEYCHAIN_ACCOUNT_NAMES[scopeProfile]}).`);
   } else {
     console.log(`Token saved to ${getTokenFilePath(scopeProfile)}`);
   }

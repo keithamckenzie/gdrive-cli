@@ -51,7 +51,7 @@ A TypeScript CLI for Google Drive API v3. List, search, upload, download, export
 ## Requirements
 
 - **Node.js 18+** (LTS recommended)
-- **pnpm**, **npm**, or **yarn** for dependency installation
+- **pnpm** for dependency installation (the lockfile is `pnpm-lock.yaml`)
 - A Google Cloud project with Drive API enabled (see [Google Cloud Setup](#google-cloud-setup))
 
 ## Installation
@@ -59,17 +59,18 @@ A TypeScript CLI for Google Drive API v3. List, search, upload, download, export
 ### macOS
 
 ```bash
-# Install Node.js if you don't have it
+# Install Node.js and pnpm if you don't have them
 brew install node
+npm install -g pnpm
 
 # Clone and build
 git clone https://github.com/keithamckenzie/gdrive-cli.git
 cd gdrive-cli
-npm install
-npm run build
+pnpm install
+pnpm run build
 
 # Link globally so 'gdrive' is available everywhere
-npm link
+pnpm link --global
 ```
 
 Verify the installation:
@@ -83,11 +84,12 @@ gdrive --version
 ```powershell
 # Install Node.js from https://nodejs.org (LTS)
 # Then in PowerShell or Command Prompt:
+npm install -g pnpm
 git clone https://github.com/keithamckenzie/gdrive-cli.git
 cd gdrive-cli
-npm install
-npm run build
-npm link
+pnpm install
+pnpm run build
+pnpm link --global
 ```
 
 Verify the installation:
@@ -104,13 +106,14 @@ gdrive --version
 # Install Node.js via your package manager or nvm
 # Debian/Ubuntu:
 sudo apt install nodejs npm
+npm install -g pnpm
 
 # Then:
 git clone https://github.com/keithamckenzie/gdrive-cli.git
 cd gdrive-cli
-npm install
-npm run build
-npm link
+pnpm install
+pnpm run build
+pnpm link --global
 ```
 
 Verify the installation:
@@ -251,7 +254,7 @@ gdrive shared-drives
 gdrive info <fileId>
 ```
 
-Returns: ID, name, MIME type, size, created/modified dates, parents, sharing status, owners, permissions, and links.
+Returns JSON with: ID, name, MIME type, size, created/modified dates, parents, sharing status, owners, permissions, and links.
 
 ### Downloading and exporting
 
@@ -404,14 +407,11 @@ gdrive revisions <fileId>
 # Show storage quota
 gdrive quota
 
-# Revoke tokens and log out (current scope profile)
+# Revoke tokens and log out all scope profiles
 gdrive logout
 
-# Log out a specific scope profile
+# Log out a specific scope profile only
 gdrive --scope readonly logout
-
-# Log out all scope profiles
-gdrive logout
 ```
 
 ## Global Options
@@ -420,7 +420,7 @@ gdrive logout
 |---|---|---|
 | `-c, --credentials <path>` | Path to your OAuth credentials JSON | `~/.config/gdrive-cli/credentials.json` |
 | `--scope <profile>` | Override the scope profile (`readonly` or `full`) | Per-command default |
-| `--no-keychain` | Skip native keychain, use file-based token storage | Keychain enabled |
+| `--no-keychain` | Disable native keychain, use file-based token storage | Keychain enabled |
 | `-V, --version` | Print version | |
 | `-h, --help` | Print help | |
 
@@ -631,9 +631,9 @@ gdrive list   # triggers fresh authorization
 
 To avoid this, you can submit your Google Cloud project for verification, but that requires a privacy policy and domain — overkill for personal use.
 
-### No JSON output
+### No structured output option
 
-All commands produce human-readable text output. There is no `--json` flag for machine-readable output. If you need to script with `gdrive`, you'll need to parse the text output.
+Most commands produce human-readable text output. The `info` command outputs JSON, but other commands have no `--json` flag. If you need to script with `gdrive`, you'll need to parse the text output for most commands.
 
 ### No pagination
 
@@ -672,7 +672,7 @@ The default credentials and token path is `~/.config/gdrive-cli/` on all platfor
 ```bash
 # From the repo directory
 cd gdrive-cli
-npm unlink
+pnpm unlink --global
 ```
 
 **Remove stored tokens:**
