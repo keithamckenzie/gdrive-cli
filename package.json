@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "tsx src/cli.ts",
     "build": "tsc",
-    "prepack": "npm run build",
+    "prepack": "pnpm run build",
     "gdrive": "tsx src/cli.ts"
   },
   "keywords": [

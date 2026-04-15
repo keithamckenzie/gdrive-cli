@@ -35,6 +35,7 @@ A TypeScript CLI for Google Drive API v3. List, search, upload, download, export
   - [File-based fallback](#file-based-fallback)
 - [Troubleshooting](#troubleshooting)
 - [Known Limitations](#known-limitations)
+- [Using a Different Package Manager](#using-a-different-package-manager)
 - [Uninstalling](#uninstalling)
 - [Feedback](#feedback)
 - [License](#license)
@@ -51,7 +52,7 @@ A TypeScript CLI for Google Drive API v3. List, search, upload, download, export
 ## Requirements
 
 - **Node.js 18+** (LTS recommended)
-- **pnpm** for dependency installation (the lockfile is `pnpm-lock.yaml`)
+- **pnpm** (recommended — the lockfile is `pnpm-lock.yaml`). npm, Yarn, and Bun also work; see [Using a Different Package Manager](#using-a-different-package-manager).
 - A Google Cloud project with Drive API enabled (see [Google Cloud Setup](#google-cloud-setup))
 
 ## Installation
@@ -665,12 +666,63 @@ gdrive --no-keychain list
 
 The default credentials and token path is `~/.config/gdrive-cli/` on all platforms. On Windows this resolves to `C:\Users\<name>\.config\gdrive-cli\` — which works but is unconventional (Windows apps typically use `%APPDATA%`).
 
+## Using a Different Package Manager
+
+This repo ships with a `pnpm-lock.yaml` lockfile and a `packageManager` field pointing to pnpm. If you prefer npm, Yarn, or Bun, make these changes after cloning:
+
+### npm
+
+```bash
+# Remove the pnpm lockfile and packageManager field
+rm pnpm-lock.yaml
+npm pkg delete packageManager
+
+# Install, build, and link
+npm install
+npm run build
+npm link
+```
+
+Unlink later with `npm unlink -g gdrive-cli`.
+
+### Yarn
+
+```bash
+# Remove the pnpm lockfile and switch packageManager
+rm pnpm-lock.yaml
+npm pkg set packageManager="yarn@4.9.1"   # or your preferred version
+
+# Install, build, and link
+yarn install
+yarn run build
+yarn link
+```
+
+Unlink later with `yarn unlink`.
+
+### Bun
+
+```bash
+# Remove the pnpm lockfile and packageManager field
+rm pnpm-lock.yaml
+npm pkg delete packageManager
+
+# Install, build, and link
+bun install
+bun run build
+bun link
+```
+
+Unlink later with `bun unlink`.
+
+> **Note:** Whichever package manager you choose, the `prepack` script in `package.json` references `pnpm run build`. Update it to match your package manager (e.g., `npm run build`, `yarn run build`, or `bun run build`) if you plan to pack or publish the package.
+
 ## Uninstalling
 
 **Remove the CLI:**
 
 ```bash
-# From the repo directory
+# From the repo directory (use whichever package manager you installed with)
 cd gdrive-cli
 pnpm unlink --global
 ```
