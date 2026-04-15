@@ -70,7 +70,7 @@ npm install -g gdrive-cli
 brew install node
 
 # Clone and build
-git clone https://github.com/keithmckenzie/gdrive-cli.git
+git clone https://github.com/keithamckenzie/gdrive-cli.git
 cd gdrive-cli
 npm install
 npm run build
@@ -98,7 +98,7 @@ npm install -g gdrive-cli
 ```powershell
 # Install Node.js from https://nodejs.org (LTS)
 # Then in PowerShell or Command Prompt:
-git clone https://github.com/keithmckenzie/gdrive-cli.git
+git clone https://github.com/keithamckenzie/gdrive-cli.git
 cd gdrive-cli
 npm install
 npm run build
@@ -129,7 +129,7 @@ npm install -g gdrive-cli
 sudo apt install nodejs npm
 
 # Then:
-git clone https://github.com/keithmckenzie/gdrive-cli.git
+git clone https://github.com/keithamckenzie/gdrive-cli.git
 cd gdrive-cli
 npm install
 npm run build

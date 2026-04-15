@@ -33,12 +33,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/keithmckenzie/gdrive-cli.git"
+    "url": "https://github.com/keithamckenzie/gdrive-cli.git"
   },
   "bugs": {
-    "url": "https://github.com/keithmckenzie/gdrive-cli/issues"
+    "url": "https://github.com/keithamckenzie/gdrive-cli/issues"
   },
-  "homepage": "https://github.com/keithmckenzie/gdrive-cli#readme",
+  "homepage": "https://github.com/keithamckenzie/gdrive-cli#readme",
   "packageManager": "pnpm@10.30.2",
   "dependencies": {
     "@googleapis/drive": "^20.1.0",
