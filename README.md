@@ -34,6 +34,7 @@ A TypeScript CLI for Google Drive API v3. List, search, upload, download, export
   - [Linux — Secret Service](#linux--secret-service)
   - [File-based fallback](#file-based-fallback)
 - [Troubleshooting](#troubleshooting)
+- [Known Limitations](#known-limitations)
 - [Uninstalling](#uninstalling)
 - [Feedback](#feedback)
 - [License](#license)
@@ -57,14 +58,6 @@ A TypeScript CLI for Google Drive API v3. List, search, upload, download, export
 
 ### macOS
 
-**Option A — Install from npm (recommended):**
-
-```bash
-npm install -g gdrive-cli
-```
-
-**Option B — Build from source:**
-
 ```bash
 # Install Node.js if you don't have it
 brew install node
@@ -87,14 +80,6 @@ gdrive --version
 
 ### Windows
 
-**Option A — Install from npm:**
-
-```powershell
-npm install -g gdrive-cli
-```
-
-**Option B — Build from source:**
-
 ```powershell
 # Install Node.js from https://nodejs.org (LTS)
 # Then in PowerShell or Command Prompt:
@@ -114,14 +99,6 @@ gdrive --version
 > **Note:** On Windows, tokens are stored in Windows Credential Manager by default. No extra configuration needed.
 
 ### Linux
-
-**Option A — Install from npm:**
-
-```bash
-npm install -g gdrive-cli
-```
-
-**Option B — Build from source:**
 
 ```bash
 # Install Node.js via your package manager or nvm
@@ -629,15 +606,71 @@ If you encounter path-related errors on Windows, ensure long paths are enabled:
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
 ```
 
+## Known Limitations
+
+### Not published to npm
+
+This package is not currently available on npm. You must build from source (see [Installation](#installation)).
+
+### Google Cloud setup is involved
+
+Before using the CLI, you need to create a Google Cloud project, enable the Drive API, configure an OAuth consent screen with scopes, add yourself as a test user, and create/download OAuth credentials. This is a one-time setup but involves 15+ steps across multiple Google Cloud Console pages. The most common mistakes:
+
+- **Forgetting to register scopes** on the Data Access page — the OAuth flow fails with a cryptic scope error
+- **Forgetting to add yourself as a test user** — you get "Access blocked" with no clear cause
+- **Choosing "Web application" instead of "Desktop app"** when creating the OAuth client — causes redirect URI mismatches
+
+### Tokens expire weekly in Testing mode
+
+Google expires refresh tokens after **7 days** for OAuth apps in Testing mode (i.e., apps that haven't gone through Google's verification process). This means you'll need to re-authorize roughly once a week:
+
+```bash
+gdrive logout
+gdrive list   # triggers fresh authorization
+```
+
+To avoid this, you can submit your Google Cloud project for verification, but that requires a privacy policy and domain — overkill for personal use.
+
+### No JSON output
+
+All commands produce human-readable text output. There is no `--json` flag for machine-readable output. If you need to script with `gdrive`, you'll need to parse the text output.
+
+### No pagination
+
+`list` and `search` return a single page of results (default 20, adjustable with `-n`). When more results exist, the CLI prints "(more results available)" but there is no `--page-token` or `--all` flag to fetch additional pages.
+
+### Download vs. export isn't automatic
+
+Google Workspace files (Docs, Sheets, Slides, Drawings) cannot be downloaded as raw files — they must be exported to a specific format. The CLI requires you to use `export` instead of `download` for these files:
+
+```bash
+# This fails for a Google Doc
+gdrive download <docId>
+
+# Use export instead
+gdrive export <docId> pdf
+```
+
+Other Drive CLIs handle this automatically. This one doesn't — you need to know which command to use.
+
+### Headless Linux environments
+
+On Linux servers, Docker containers, WSL1, and other environments without a desktop, the native keychain module (`@napi-rs/keyring`) may fail to load. The CLI falls back to file-based token storage, but you may see D-Bus or Secret Service errors in the process. Use `--no-keychain` to suppress these:
+
+```bash
+gdrive --no-keychain list
+```
+
+### Windows config directory
+
+The default credentials and token path is `~/.config/gdrive-cli/` on all platforms. On Windows this resolves to `C:\Users\<name>\.config\gdrive-cli\` — which works but is unconventional (Windows apps typically use `%APPDATA%`).
+
 ## Uninstalling
 
 **Remove the CLI:**
 
 ```bash
-# If installed via npm
-npm uninstall -g gdrive-cli
-
-# If built from source and linked
+# From the repo directory
 cd gdrive-cli
 npm unlink
 ```
