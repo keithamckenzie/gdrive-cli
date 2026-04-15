@@ -96,7 +96,19 @@ function loadCredentials(credPath: string): CredentialsFile {
   }
 
   ensurePrivateFilePermissions(credPath);
-  return JSON.parse(fs.readFileSync(credPath, "utf-8")) as CredentialsFile;
+
+  let raw: string;
+  try {
+    raw = fs.readFileSync(credPath, "utf-8");
+  } catch {
+    throw new Error(`Cannot read credentials file at ${credPath}. Check file permissions.`);
+  }
+
+  try {
+    return JSON.parse(raw) as CredentialsFile;
+  } catch {
+    throw new Error(`Credentials file at ${credPath} is not valid JSON.`);
+  }
 }
 
 function shouldUseKeychain(useKeychain = true): boolean {
@@ -277,8 +289,14 @@ async function getNewToken(
       const returnedState = callbackUrl.searchParams.get("state");
       const authCode = callbackUrl.searchParams.get("code");
 
+      const securityHeaders = {
+        "Content-Security-Policy": "default-src 'none'",
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "no-store",
+      };
+
       if (!returnedState || returnedState !== state) {
-        res.writeHead(400, { "Content-Type": "text/plain" });
+        res.writeHead(400, { "Content-Type": "text/plain", ...securityHeaders });
         res.end("Invalid OAuth state");
         finish(() =>
           reject(new Error("OAuth callback rejected because the state parameter was missing or invalid."))
@@ -287,13 +305,13 @@ async function getNewToken(
       }
 
       if (!authCode) {
-        res.writeHead(400, { "Content-Type": "text/plain" });
+        res.writeHead(400, { "Content-Type": "text/plain", ...securityHeaders });
         res.end("Missing code parameter");
         finish(() => reject(new Error("OAuth callback did not include an authorization code.")));
         return;
       }
 
-      res.writeHead(200, { "Content-Type": "text/html" });
+      res.writeHead(200, { "Content-Type": "text/html", ...securityHeaders });
       res.end("<h1>Authorization successful!</h1><p>You can close this tab.</p>");
       finish(() => resolve(authCode));
     });

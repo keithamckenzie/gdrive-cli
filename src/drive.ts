@@ -13,8 +13,10 @@ export function escapeDriveQueryValue(value: string): string {
 
 export function sanitizeRemoteFilename(name: string): string {
   const sanitized = name
+    .replace(/\0/g, "")
     .replace(/[\\/]/g, "")
     .replace(/[\x00-\x1F\x7F]/g, "")
+    .replace(/\.\./g, "")
     .replace(/^[.\s]+|[.\s]+$/g, "");
 
   return sanitized;
