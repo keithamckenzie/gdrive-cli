@@ -36,6 +36,7 @@ A TypeScript CLI for Google Drive API v3. List, search, upload, download, export
 - [Troubleshooting](#troubleshooting)
 - [Known Limitations](#known-limitations)
 - [Using a Different Package Manager](#using-a-different-package-manager)
+- [Use with AI agents](#use-with-ai-agents)
 - [Uninstalling](#uninstalling)
 - [Feedback](#feedback)
 - [License](#license)
@@ -48,6 +49,7 @@ A TypeScript CLI for Google Drive API v3. List, search, upload, download, export
 - PKCE-secured OAuth 2.0 flow with local callback server
 - Error output automatically redacts tokens, keys, and emails
 - Works with personal Google accounts and Google Workspace
+- Optional AI-agent skill (`skills/gdrive/`) for agents that load markdown instruction files — see [Use with AI agents](#use-with-ai-agents)
 
 ## Requirements
 
@@ -716,6 +718,16 @@ bun link
 Unlink later with `bun unlink`.
 
 > **Note:** Whichever package manager you choose, the `prepack` script in `package.json` references `pnpm run build`. Update it to match your package manager (e.g., `npm run build`, `yarn run build`, or `bun run build`) if you plan to pack or publish the package.
+
+## Use with AI agents
+
+The `skills/` directory contains an optional, agent-agnostic skill file that teaches an AI coding agent how to drive `gdrive` safely. The CLI works perfectly well on its own — install the skill only if you want an agent to handle Google Drive tasks for you.
+
+The skill covers the full command surface, the `export` vs `download` distinction, per-profile logout, and a mutation-confirmation policy (read-only / low-impact / high-impact tiers) so the agent confirms with you before destructive operations.
+
+**Trust boundary:** the skill never reads, writes, or echoes credential files, OAuth tokens, or keychain entries. All authentication is delegated to the CLI, exactly as documented in [Authorization](#authorization) and [Token Storage](#token-storage). On any auth or scope error, the skill instructs the agent to direct you to re-run the CLI's authorization flow rather than touching credentials.
+
+See [`skills/README.md`](skills/README.md) for per-agent installation steps and the full security notes.
 
 ## Uninstalling
 
